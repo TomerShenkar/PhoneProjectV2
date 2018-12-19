@@ -14,6 +14,11 @@ public class getLine {
 		q = new LinkedList<>();
 	}
 	
+	public void addRaw(String s) {
+		byte[] sarr = s.getBytes();
+		addRaw(sarr);
+	}
+	
 	public void addRaw(byte[] raw) {
 		for(int i = 0; i<raw.length; i++) {
 			Save = Save + (char)raw[i];
