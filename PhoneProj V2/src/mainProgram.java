@@ -13,7 +13,7 @@ public class mainProgram {
 		}
 		int pick = reader.nextInt();
 		if(SH.portOpener(pick)) {
-			serialListener sl = new modemParser();
+			serialListener sl = new collectSerialData();
 			SH.setListener(sl);
 			
 			while(true) {
