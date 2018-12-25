@@ -24,11 +24,11 @@ public class mainProgramGUI extends JFrame {
 	protected static String Addition;
 
 	//private static LocalDateTime modemTime;
-	private static String phoneNum = "";
+	private String phoneNum = "";
 	private static getLine GetLine = new getLine();
 	private static boolean nextIsMSG = false;
 	private JPanel contentPane;
-	private static JTextArea textMain;
+	private JTextArea textMain;
 
 	/**
 	 * Launch the application.
@@ -118,9 +118,9 @@ public class mainProgramGUI extends JFrame {
 							// They may come grouped in chunks.
 							if (chunks.size() > 0) {
 								for (int i = 0; i < chunks.size(); i++) {
-									// String OldestValue = chunks.get(i);
-									textMain.setText(chunks.get(i));
-									textMain.setText("\r\n");
+									String OldestValue = chunks.get(i) + "\r\n";
+									//textMain.append(OldestValue);
+									//textMain.append("\r\n");
 								}
 								chunks.clear();
 							}
@@ -145,7 +145,7 @@ public class mainProgramGUI extends JFrame {
 					if (phoneNum.length() > 0) {
 						SH.writeString("ATD" + phoneNum + ";", true);
 						PhoneState = State.Dialing;
-						textMain.setText("Calling " + phoneNum);
+						textMain.append("Calling " + phoneNum);
 					}
 				}
 			}
@@ -157,9 +157,10 @@ public class mainProgramGUI extends JFrame {
 		Declinebtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				phoneNum = "";
+				textMain.append(phoneNum);
 				if (PhoneState == State.DuringCall || PhoneState == State.Ringing || PhoneState == State.Dialing) {
 					SH.writeString("ATH", true);
-					textMain.setText("End of call");
+					textMain.append("End of call");
 				}
 			}
 		});
@@ -277,10 +278,11 @@ public class mainProgramGUI extends JFrame {
 		JButton btnClr = new JButton("CLR");
 		btnClr.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (phoneNum != null && phoneNum.length() > 0) {
+				if (phoneNum.length() > 0) {
 					phoneNum = phoneNum.substring(0, phoneNum.length() - 1);
 					textMain.setText(phoneNum);
 					if (phoneNum.length() == 0) {
+						phoneNum = "";
 						PhoneState = State.Idle;
 					}
 				}
@@ -289,9 +291,12 @@ public class mainProgramGUI extends JFrame {
 		btnClr.setBounds(125, 108, 70, 20);
 		contentPane.add(btnClr);
 		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 11, 297, 86);
+		contentPane.add(scrollPane);
+		
 		textMain = new JTextArea();
-		textMain.setBounds(10, 11, 300, 86);
-		contentPane.add(textMain);
+		scrollPane.setViewportView(textMain);
 	}
 
 	public static String processMSG(String MSG) {
@@ -300,9 +305,9 @@ public class mainProgramGUI extends JFrame {
 		return Number;
 	}
 
-	public static void typingNumber(String key) {
+	public void typingNumber(String key) {
 		phoneNum = phoneNum + key;
-		textMain.setText(phoneNum);
+		textMain.append(key);
 		PhoneState = State.TypingNumber;
 	}
 	/*
