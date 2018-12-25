@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 //import java.time.LocalDateTime;
-import javax.swing.SwingWorker;
 
 @SuppressWarnings("serial")
 public class mainProgramGUI extends JFrame {
@@ -119,8 +118,11 @@ public class mainProgramGUI extends JFrame {
 							if (chunks.size() > 0) {
 								for (int i = 0; i < chunks.size(); i++) {
 									String OldestValue = chunks.get(i);
-									textMain.append(OldestValue);
-									textMain.append("\r\n");
+									if(!OldestValue.equals("")) {
+										textMain.append(OldestValue);
+										textMain.append("\r\n");
+									}
+									
 								}
 								chunks.clear();
 							}
@@ -129,7 +131,7 @@ public class mainProgramGUI extends JFrame {
 					};
 
 					worker.execute();
-					OpenPortbtn.setEnabled(false);
+						OpenPortbtn.setEnabled(false);
 				}
 			}
 		});
@@ -141,10 +143,13 @@ public class mainProgramGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (PhoneState == State.Ringing) {
 					SH.writeString("ATA", true);
+					PhoneState = State.DuringCall;
+					textMain.append("During call");
 				} else if (PhoneState == State.TypingNumber) {
 					if (phoneNum.length() > 0) {
 						SH.writeString("ATD" + phoneNum + ";", true);
 						PhoneState = State.Dialing;
+						textMain.append("\r\n");
 						textMain.append("Calling " + phoneNum);
 					}
 				}
