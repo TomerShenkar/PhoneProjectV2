@@ -76,7 +76,7 @@ public class mainProgramGUI extends JFrame {
 				if (SH.portOpener(COMMboBox.getSelectedIndex())) {
 					serialListener sl = new collectSerialData();
 					SH.setListener(sl);
-					SH.writeString("AT+CCLK?\r", true);
+					//SH.writeString("AT+CCLK?\r", true);
 					SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String>() {
 						@Override
 						protected Boolean doInBackground() throws Exception {
@@ -118,9 +118,9 @@ public class mainProgramGUI extends JFrame {
 							// They may come grouped in chunks.
 							if (chunks.size() > 0) {
 								for (int i = 0; i < chunks.size(); i++) {
-									String OldestValue = chunks.get(i) + "\r\n";
-									//textMain.append(OldestValue);
-									//textMain.append("\r\n");
+									String OldestValue = chunks.get(i);
+									textMain.append(OldestValue);
+									textMain.append("\r\n");
 								}
 								chunks.clear();
 							}
