@@ -28,10 +28,14 @@ public class mainProgramGUI extends JFrame {
 	private static boolean nextIsMSG = false;
 	private JPanel contentPane;
 	private JTextArea textMain;
-
-	/**
+	private boolean isRing = false;	
+	private boolean isClip = false;
+	private JTextArea textSMS;
+	
+	 /**
 	 * Launch the application.
 	 */
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -80,10 +84,9 @@ public class mainProgramGUI extends JFrame {
 						@Override
 						protected Boolean doInBackground() throws Exception {
 							// Simulate doing something useful.
-							int x = 10;
+							int x = 10;	
 							while (x < 1000) {
 								Thread.sleep(1000);
-
 								// The type we pass to publish() is determined
 								// by the second template parameter.
 								if (Addition != null) {
@@ -151,6 +154,7 @@ public class mainProgramGUI extends JFrame {
 						PhoneState = State.Dialing;
 						textMain.append("\r\n");
 						textMain.append("Calling " + phoneNum);
+						textMain.append("\r\n");
 					}
 				}
 			}
@@ -166,6 +170,7 @@ public class mainProgramGUI extends JFrame {
 				if (PhoneState == State.DuringCall || PhoneState == State.Ringing || PhoneState == State.Dialing) {
 					SH.writeString("ATH", true);
 					textMain.append("End of call");
+					textMain.append("\r\nE");
 				}
 			}
 		});
@@ -302,6 +307,22 @@ public class mainProgramGUI extends JFrame {
 		
 		textMain = new JTextArea();
 		scrollPane.setViewportView(textMain);
+		
+		JButton btnSendSms = new JButton("Send SMS");
+		btnSendSms.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String MSG = textSMS.getText();
+				SH.writeString("AT+CMGS=\"" + phoneNum + "\"", true);
+				byte[] msg = MSG.getBytes();
+				SH.writeByte(msg);
+			}	
+		});
+		btnSendSms.setBounds(221, 436, 89, 23);
+		contentPane.add(btnSendSms);
+		
+		textSMS = new JTextArea();
+		textSMS.setBounds(10, 435, 200, 23);
+		contentPane.add(textSMS);
 	}
 
 	public static String processMSG(String MSG) {
@@ -330,20 +351,26 @@ public class mainProgramGUI extends JFrame {
 		if (temp != null) {
 			if (nextIsMSG) {
 				nextIsMSG = false;
-				return ("Message is " + temp);
+				return ("Send your message");
 
 			} else if (temp.startsWith("RING")) {
-				PhoneState = State.Ringing;
-				return ("Ringing");
-
+				if(isRing == false) {
+					PhoneState = State.Ringing;
+					isRing = true;
+					return ("Ringing");
+				}
 			} else if (temp.startsWith("+CLIP:")) {
-				String[] parts = temp.split("\"");
-				String Number = parts[1];
-				PhoneState = State.Ringing;
-				return ("Call from " + Number);
-
+				if(isClip == false){
+					String[] parts = temp.split("\"");
+					String Number = parts[1];
+					PhoneState = State.Ringing;
+					isClip = true;
+					return ("Call from " + Number);
+				}
 			} else if (temp.startsWith("NO CARRIER")) {
 				PhoneState = State.Idle;
+				isRing = false;
+				isClip = false;
 				return ("End of call");
 			} else if (temp.startsWith("+CCLK:")) {
 				/*
